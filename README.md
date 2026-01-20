@@ -1,161 +1,168 @@
-📘 README.md — NoFap Tracker Pro
-🚀 Project Overview
+# 📘 NoFap Tracker Pro
+
+## 🚀 Project Overview
 
 NoFap Tracker Pro is a full-stack habit tracker app that helps you track:
 
-  ✅ Clean days (day-wise tracking)
-  ❌ Relapse logs (date + actress + optional note)
-  📊 Monthly relapse charts
-  🧠 Actress-wise relapse counts (trigger stats)
-  🗓️ Calendar view (click a date → modal to update)
-  🔥 GitHub-style heatmap (last 365 days)
-  🔁 Reset streak logic
-  📥 Export relapse logs to CSV
-  🔐 Auth system (Signup/Login) with JWT
+- ✅ Clean days (day-wise tracking)
+- ❌ Relapse logs (date + actress + optional note)
+- 📊 Monthly relapse charts
+- 🧠 Actress-wise relapse counts (trigger stats)
+- 🗓️ Calendar view (click a date → modal to update)
+- 🔥 GitHub-style heatmap (last 365 days)
+- 🔁 Reset streak logic
+- 📥 Export relapse logs to CSV
+- 🔐 Auth system (Signup/Login) with JWT
 
-🛠 Tech Stack:
-Frontend:
-  React + Vite
-  TailwindCSS
-  Chart.js
-  Axios
-  React Router
+## 🛠 Tech Stack
 
-Backend:
-  Node.js + Express
-  MongoDB (Local)
-  Mongoose
-  JWT Authentication
-  bcryptjs
+### Frontend
+- React + Vite
+- TailwindCSS
+- Chart.js
+- Axios
+- React Router
 
-📂 Folder Structure
+### Backend
+- Node.js + Express
+- MongoDB (Local)
+- Mongoose
+- JWT Authentication
+- bcryptjs
+
+## 📂 Folder Structure
+
+```
 nofap-tracker-pro/
-  backend/
-  frontend/
+├── backend/
+└── frontend/
+```
 
-⚙️ Setup Instructions (Local)
-✅ 1) Start MongoDB (Windows)
+## ⚙️ Setup Instructions (Local)
+
+### ✅ 1) Start MongoDB (Windows)
 
 Make sure MongoDB service is running:
+```powershell
+net start | findstr Mongo
+```
 
-  net start | findstr Mongo
-  
 You should see:
-
+```
 MongoDB Server (MongoDB)
+```
 
-✅ 2) Backend Setup
-📌 Go to backend folder
-cd backend
+### ✅ 2) Backend Setup
 
-📌 Install dependencies
-npm install
+1. Go to backend folder:
+   ```bash
+   cd backend
+   ```
 
-📌 Run backend server
-npm run dev
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
+3. Run backend server:
+   ```bash
+   npm run dev
+   ```
 
-Backend runs on:
-http://localhost:5000
+Backend runs on: `http://localhost:5000`
 
-✅ 3) Frontend Setup
-📌 Go to frontend folder
-cd frontend
+### ✅ 3) Frontend Setup
 
-📌 Install dependencies
-npm install
+1. Go to frontend folder:
+   ```bash
+   cd frontend
+   ```
 
-📌 Start frontend
-npm run dev
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
+3. Start frontend:
+   ```bash
+   npm run dev
+   ```
 
-Frontend runs on:
-http://localhost:5173
+Frontend runs on: `http://localhost:5173`
 
-🔐 Authentication Flow
+## 🔐 Authentication Flow
 
-Signup creates user and returns JWT token
-Login returns JWT token
-Token is stored in localStorage
-Axios interceptor attaches token automatically in every request
+- Signup creates user and returns JWT token
+- Login returns JWT token
+- Token is stored in localStorage
+- Axios interceptor attaches token automatically in every request
 
-📌 Main Features
-✅ Clean Day Tracking
-  Click on calendar date
-  Select Mark Clean
-  Saves clean day in DB
+## 📌 Main Features
 
-❌ Relapse Logging
-  Click on calendar date
-  Select Add Relapse
-  Enter actress + note
-  Saves relapse log in DB
+### ✅ Clean Day Tracking
+- Click on calendar date
+- Select Mark Clean
+- Saves clean day in DB
 
-📅 Calendar View
+### ❌ Relapse Logging
+- Click on calendar date
+- Select Add Relapse
+- Enter actress + note
+- Saves relapse log in DB
 
-Shows:
-  🟢 Clean days
-  🔴 Relapse days
-  
-  Click a day → opens modal
+### 📅 Calendar View
+- 🟢 Clean days
+- 🔴 Relapse days
+- Click a day → opens modal
 
-🔥 Heatmap (Last 365 days)
+### 🔥 Heatmap (Last 365 days)
+- GitHub style grid
+- Colors:
+  - Lime = Clean
+  - Pink = Relapse
+  - Dark = Empty
+- Scrollable horizontally
 
-  GitHub style grid
-  Colors:
-  Lime = Clean
-  Pink = Relapse
-  Dark = Empty
+### 📊 Monthly Chart
+- Bar chart showing relapses per month
 
-Scrollable horizontally
+### 📈 Actress-wise Count
+- Table showing actress name and relapse count
 
-📊 Monthly Chart
+### 🔁 Reset Streak
+- Resets streak base date
+- Streak calculation uses latest of last relapse date OR reset date
 
-Bar chart showing relapses per month
+### 📥 Export CSV
+- Downloads relapse logs in CSV format
 
-📈 Actress-wise Count
+## 🗄 Database Info (Local MongoDB)
 
-Table showing actress name and relapse count
+**Connection String:** `mongodb://127.0.0.1:27017/nofap_pro`
 
-🔁 Reset Streak
+### Database: `nofap_pro`
 
-Resets streak base date
+**Collections:**
+- users
+- relapses
+- cleandays
 
-Streak calculation uses:
-
-latest of last relapse date OR reset date
-
-📥 Export CSV
-
-Downloads relapse logs in CSV format.
-
-🗄 Database Info (Local MongoDB)
-Connection used:
-mongodb://127.0.0.1:27017/nofap_pro
-
-Database:
-
-✅ nofap_pro
-
-Collections:
-
-users
-
-relapses
-
-cleandays
-
-👀 View Database (GUI)
+### 👀 View Database (GUI)
 
 Install MongoDB Compass and connect to:
-
+```
 mongodb://127.0.0.1:27017
+```
 
-🧪 CLI Database Access (mongosh)
+### 🧪 CLI Database Access (mongosh)
+
 Start shell:
+```bash
 mongosh
+```
 
-Commands:
+**Commands:**
+```bash
 show dbs
 use nofap_pro
 show collections
@@ -164,38 +171,47 @@ db.users.find()
 db.relapses.find()
 db.cleandays.find()
 
-
-Exit:
-
 exit
+```
 
-🔧 Environment Variables (Frontend)
+## 🔧 Environment Variables (Frontend)
 
-Create this file:
-📌 frontend/.env
+Create this file: `frontend/.env`
 
+```
 VITE_API_BASE=http://localhost:5000/api
+```
 
-🔧 Notes / Troubleshooting
-❌ Tailwind @tailwind not working
+## 🔧 Troubleshooting
+
+### ❌ Tailwind @tailwind not working
 
 Run inside frontend:
-
+```bash
 npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
+```
 
+Then restart:
+```bash
+npm run dev
+```
 
-Restart:
-  npm run dev
-  ❌ 401 Unauthorized / No token
-  This happens when token is missing.
-Fix:
-  Login again
-  Ensure token exists:
-localStorage.getItem("token")
+### ❌ 401 Unauthorized / No token
 
-📌 Future Enhancements (Optional)
-  Mobile App (React Native / Flutter)
+This happens when token is missing.
+
+**Fix:**
+1. Login again
+2. Ensure token exists: `localStorage.getItem("token")`
+
+## 📌 Future Enhancements (Optional)
+- Mobile App (React Native / Flutter)
+- Cloud DB (MongoDB Atlas)
+
+## ✅ Author
+
+Built by Vishal Kumar 🚀
   Cloud DB (MongoDB Atlas)
 
 
