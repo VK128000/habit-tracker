@@ -3,48 +3,30 @@
 
 NoFap Tracker Pro is a full-stack habit tracker app that helps you track:
 
-✅ Clean days (day-wise tracking)
+  ✅ Clean days (day-wise tracking)
+  ❌ Relapse logs (date + actress + optional note)
+  📊 Monthly relapse charts
+  🧠 Actress-wise relapse counts (trigger stats)
+  🗓️ Calendar view (click a date → modal to update)
+  🔥 GitHub-style heatmap (last 365 days)
+  🔁 Reset streak logic
+  📥 Export relapse logs to CSV
+  🔐 Auth system (Signup/Login) with JWT
 
-❌ Relapse logs (date + actress + optional note)
+🛠 Tech Stack:
+Frontend:
+  React + Vite
+  TailwindCSS
+  Chart.js
+  Axios
+  React Router
 
-📊 Monthly relapse charts
-
-🧠 Actress-wise relapse counts (trigger stats)
-
-🗓️ Calendar view (click a date → modal to update)
-
-🔥 GitHub-style heatmap (last 365 days)
-
-🔁 Reset streak logic
-
-📥 Export relapse logs to CSV
-
-🔐 Auth system (Signup/Login) with JWT
-
-🛠 Tech Stack
-Frontend
-
-React + Vite
-
-TailwindCSS
-
-Chart.js
-
-Axios
-
-React Router
-
-Backend
-
-Node.js + Express
-
-MongoDB (Local)
-
-Mongoose
-
-JWT Authentication
-
-bcryptjs
+Backend:
+  Node.js + Express
+  MongoDB (Local)
+  Mongoose
+  JWT Authentication
+  bcryptjs
 
 📂 Folder Structure
 nofap-tracker-pro/
@@ -56,9 +38,8 @@ nofap-tracker-pro/
 
 Make sure MongoDB service is running:
 
-net start | findstr Mongo
-
-
+  net start | findstr Mongo
+  
 You should see:
 
 MongoDB Server (MongoDB)
@@ -75,7 +56,6 @@ npm run dev
 
 
 Backend runs on:
-
 http://localhost:5000
 
 ✅ 3) Frontend Setup
@@ -90,59 +70,42 @@ npm run dev
 
 
 Frontend runs on:
-
 http://localhost:5173
 
 🔐 Authentication Flow
 
 Signup creates user and returns JWT token
-
 Login returns JWT token
-
 Token is stored in localStorage
-
 Axios interceptor attaches token automatically in every request
 
 📌 Main Features
 ✅ Clean Day Tracking
-
-Click on calendar date
-
-Select Mark Clean
-
-Saves clean day in DB
+  Click on calendar date
+  Select Mark Clean
+  Saves clean day in DB
 
 ❌ Relapse Logging
-
-Click on calendar date
-
-Select Add Relapse
-
-Enter actress + note
-
-Saves relapse log in DB
+  Click on calendar date
+  Select Add Relapse
+  Enter actress + note
+  Saves relapse log in DB
 
 📅 Calendar View
 
 Shows:
-
-🟢 Clean days
-
-🔴 Relapse days
-
-Click a day → opens modal
+  🟢 Clean days
+  🔴 Relapse days
+  
+  Click a day → opens modal
 
 🔥 Heatmap (Last 365 days)
 
-GitHub style grid
-
-Colors:
-
-Lime = Clean
-
-Pink = Relapse
-
-Dark = Empty
+  GitHub style grid
+  Colors:
+  Lime = Clean
+  Pink = Relapse
+  Dark = Empty
 
 Scrollable horizontally
 
@@ -223,39 +186,18 @@ npx tailwindcss init -p
 
 
 Restart:
-
-npm run dev
-
-❌ 401 Unauthorized / No token
-
-This happens when token is missing.
+  npm run dev
+  ❌ 401 Unauthorized / No token
+  This happens when token is missing.
 Fix:
-
-Login again
-
-Ensure token exists:
-
+  Login again
+  Ensure token exists:
 localStorage.getItem("token")
 
 📌 Future Enhancements (Optional)
+  Mobile App (React Native / Flutter)
+  Cloud DB (MongoDB Atlas)
 
-Mobile App (React Native / Flutter)
-
-Cloud DB (MongoDB Atlas)
-
-Deploy:
-
-Backend: Render / Railway
-
-Frontend: Vercel / Netlify
-
-Notifications & reminders
-
-Actress filter/search
-
-Heatmap clickable → open modal
 
 ✅ Author
-
 Built by Vishal Kumar 🚀
-(Full-stack habit tracker project)
