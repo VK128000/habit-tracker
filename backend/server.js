@@ -12,7 +12,33 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// ✅ Allowed Frontend Origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://habit-tracker-8z8z.vercel.app"
+];
+
+// ✅ CORS Setup
+app.use(
+  cors({
+    origin: function (origin, cb) {
+      // allow requests with no origin (like Postman / server-to-server)
+      if (!origin) return cb(null, true);
+
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+
+      return cb(new Error("Not allowed by CORS: " + origin));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
+// ✅ Preflight support
+app.options("*", cors());
+
 app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
