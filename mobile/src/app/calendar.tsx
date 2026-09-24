@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -25,6 +26,8 @@ type Relapse = {
 export default function CalendarScreen() {
   const [loading, setLoading] = useState(true);
   const [relapses, setRelapses] = useState<Relapse[]>([]);
+  const [deletingId, setDeletingId] =
+    useState<string | null>(null);
 
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().slice(0, 10)
@@ -58,7 +61,8 @@ export default function CalendarScreen() {
   }
 
   const selectedRelapses = relapses.filter(
-    (item) => item.date?.slice(0, 10) === selectedDate
+    (item) =>
+      item.date?.slice(0, 10) === selectedDate
   );
 
   const markedDates: Record<string, any> = {};
@@ -84,10 +88,65 @@ export default function CalendarScreen() {
     setSelectedDate(day.dateString);
   }
 
+  function handleDelete(relapse: Relapse) {
+    Alert.alert(
+      "Delete relapse?",
+      `Remove the relapse recorded on ${formatDate(
+        relapse.date.slice(0, 10)
+      )}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setDeletingId(relapse._id);
+
+              await api.delete(
+                `/relapse/${relapse._id}`
+              );
+
+              setRelapses((current) =>
+                current.filter(
+                  (item) => item._id !== relapse._id
+                )
+              );
+            } catch (error: any) {
+              console.log(
+                "Delete relapse error:",
+                error
+              );
+
+              if (error?.response?.status === 401) {
+                router.replace("/login");
+                return;
+              }
+
+              Alert.alert(
+                "Delete failed",
+                error?.response?.data?.msg ||
+                  "Unable to delete this relapse. Please try again."
+              );
+            } finally {
+              setDeletingId(null);
+            }
+          },
+        },
+      ]
+    );
+  }
+
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#60a5fa" />
+        <ActivityIndicator
+          size="large"
+          color="#60a5fa"
+        />
 
         <Text style={styles.loadingText}>
           Loading calendar...
@@ -106,15 +165,20 @@ export default function CalendarScreen() {
           onPress={() => router.back()}
           style={styles.backButton}
         >
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>
+            ← Back
+          </Text>
         </Pressable>
 
-        <Text style={styles.title}>Calendar</Text>
+        <Text style={styles.title}>
+          Calendar
+        </Text>
 
         <Text style={styles.subtitle}>
           View your relapse history by date.
         </Text>
 
+        {/* Calendar */}
         <View style={styles.calendarCard}>
           <Calendar
             current={selectedDate}
@@ -144,6 +208,7 @@ export default function CalendarScreen() {
           />
         </View>
 
+        {/* Selected date */}
         <View style={styles.selectedCard}>
           <Text style={styles.selectedLabel}>
             SELECTED DATE
@@ -160,7 +225,9 @@ export default function CalendarScreen() {
 
         {selectedRelapses.length === 0 ? (
           <View style={styles.emptyCard}>
-            <Text style={styles.emptyEmoji}>🟢</Text>
+            <Text style={styles.emptyEmoji}>
+              🟢
+            </Text>
 
             <Text style={styles.emptyTitle}>
               No relapse recorded
@@ -173,11 +240,16 @@ export default function CalendarScreen() {
         ) : (
           selectedRelapses.map((item, index) => (
             <View
-              key={item._id || `${item.date}-${index}`}
+              key={
+                item._id ||
+                `${item.date}-${index}`
+              }
               style={styles.relapseCard}
             >
               <View style={styles.relapseIcon}>
-                <Text style={styles.relapseEmoji}>🔴</Text>
+                <Text style={styles.relapseEmoji}>
+                  🔴
+                </Text>
               </View>
 
               <View style={styles.relapseInfo}>
@@ -196,6 +268,32 @@ export default function CalendarScreen() {
                     {item.note}
                   </Text>
                 ) : null}
+
+                {/* Delete */}
+                <Pressable
+                  style={[
+                    styles.deleteButton,
+                    deletingId === item._id &&
+                      styles.deleteButtonDisabled,
+                  ]}
+                  onPress={() =>
+                    handleDelete(item)
+                  }
+                  disabled={
+                    deletingId === item._id
+                  }
+                >
+                  {deletingId === item._id ? (
+                    <ActivityIndicator
+                      size="small"
+                      color="#fca5a5"
+                    />
+                  ) : (
+                    <Text style={styles.deleteText}>
+                      Delete
+                    </Text>
+                  )}
+                </Pressable>
               </View>
             </View>
           ))
@@ -210,7 +308,11 @@ function formatDate(dateString: string) {
     .split("-")
     .map(Number);
 
-  const date = new Date(year, month - 1, day);
+  const date = new Date(
+    year,
+    month - 1,
+    day
+  );
 
   return date.toLocaleDateString("en-IN", {
     day: "numeric",
@@ -376,5 +478,26 @@ const styles = StyleSheet.create({
     color: "#6b7280",
     fontSize: 14,
     marginTop: 5,
+  },
+
+  deleteButton: {
+    alignSelf: "flex-start",
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: "#2a1115",
+    borderWidth: 1,
+    borderColor: "#7f1d1d",
+  },
+
+  deleteButtonDisabled: {
+    opacity: 0.6,
+  },
+
+  deleteText: {
+    color: "#fca5a5",
+    fontSize: 13,
+    fontWeight: "700",
   },
 });

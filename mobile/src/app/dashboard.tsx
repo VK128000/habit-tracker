@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import {
   ActivityIndicator,
   Alert,
@@ -9,7 +9,9 @@ import {
   Text,
   View,
 } from "react-native";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import * as FileSystem from "expo-file-system/legacy";
+import * as Sharing from "expo-sharing";
 
 import { api, getToken, getUser, logout } from "@/services/api";
 
@@ -123,9 +125,17 @@ export default function DashboardScreen() {
     }
   }, []);
 
-  useEffect(() => {
-    loadDashboard();
-  }, [loadDashboard]);
+  /*
+   * Reload dashboard every time the screen gets focus.
+   *
+   * This is important after returning from Calendar because
+   * a relapse may have been deleted there.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      loadDashboard();
+    }, [loadDashboard])
+  );
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -191,27 +201,88 @@ export default function DashboardScreen() {
     router.push("/heatmap");
   }
 
+  /*
+   * Export relapse history as CSV.
+   */
+  async function handleExportCSV() {
+    try {
+      const response = await api.get("/relapse/export/csv", {
+        responseType: "text",
+      });
+
+      const csv = response.data;
+
+      const fileUri =
+        `${FileSystem.cacheDirectory}relapses.csv`;
+
+      await FileSystem.writeAsStringAsync(
+        fileUri,
+        csv,
+        {
+          encoding: FileSystem.EncodingType.UTF8,
+        }
+      );
+
+      const available = await Sharing.isAvailableAsync();
+
+      if (!available) {
+        Alert.alert(
+          "Sharing unavailable",
+          "Your device cannot share files right now."
+        );
+        return;
+      }
+
+      await Sharing.shareAsync(fileUri, {
+        mimeType: "text/csv",
+        dialogTitle: "Export relapse history",
+        UTI: "public.comma-separated-values-text",
+      });
+    } catch (error: any) {
+      console.log("Export CSV error:", error);
+
+      if (error?.response?.status === 401) {
+        await logout();
+        router.replace("/login");
+        return;
+      }
+
+      Alert.alert(
+        "Export failed",
+        error?.response?.data?.msg ||
+          "Unable to export your relapse history."
+      );
+    }
+  }
+
   async function handleLogout() {
-    Alert.alert("Logout", "Are you sure you want to logout?", [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: async () => {
-          await logout();
-          router.replace("/login");
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
         },
-      },
-    ]);
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            await logout();
+            router.replace("/login");
+          },
+        },
+      ]
+    );
   }
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#60a5fa" />
+        <ActivityIndicator
+          size="large"
+          color="#60a5fa"
+        />
 
         <Text style={styles.loadingText}>
           Loading your dashboard...
@@ -236,7 +307,9 @@ export default function DashboardScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerText}>
-            <Text style={styles.greeting}>Welcome back 👋</Text>
+            <Text style={styles.greeting}>
+              Welcome back 👋
+            </Text>
 
             <Text style={styles.name}>
               {user?.name || "User"}
@@ -247,7 +320,9 @@ export default function DashboardScreen() {
             style={styles.logoutButton}
             onPress={handleLogout}
           >
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text style={styles.logoutText}>
+              Logout
+            </Text>
           </Pressable>
         </View>
 
@@ -258,20 +333,26 @@ export default function DashboardScreen() {
               Something went wrong
             </Text>
 
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.errorText}>
+              {error}
+            </Text>
 
             <Pressable
               style={styles.retryButton}
               onPress={loadDashboard}
             >
-              <Text style={styles.retryText}>Retry</Text>
+              <Text style={styles.retryText}>
+                Retry
+              </Text>
             </Pressable>
           </View>
         ) : null}
 
         {/* Main streak card */}
         <View style={styles.streakCard}>
-          <Text style={styles.streakEmoji}>🔥</Text>
+          <Text style={styles.streakEmoji}>
+            🔥
+          </Text>
 
           <Text style={styles.streakNumber}>
             {stats?.streak ?? 0}
@@ -289,7 +370,9 @@ export default function DashboardScreen() {
         {/* Statistics */}
         <View style={styles.statsRow}>
           <View style={styles.smallCard}>
-            <Text style={styles.smallCardIcon}>🟢</Text>
+            <Text style={styles.smallCardIcon}>
+              🟢
+            </Text>
 
             <Text style={styles.statNumber}>
               {stats?.cleanDays?.length ?? 0}
@@ -301,7 +384,9 @@ export default function DashboardScreen() {
           </View>
 
           <View style={styles.smallCard}>
-            <Text style={styles.smallCardIcon}>🔴</Text>
+            <Text style={styles.smallCardIcon}>
+              🔴
+            </Text>
 
             <Text style={styles.statNumber}>
               {stats?.totalRelapses ?? 0}
@@ -327,7 +412,9 @@ export default function DashboardScreen() {
             </Text>
           </View>
 
-          <Text style={styles.infoIcon}>📅</Text>
+          <Text style={styles.infoIcon}>
+            📅
+          </Text>
         </View>
 
         {/* Reset streak */}
@@ -343,7 +430,9 @@ export default function DashboardScreen() {
             <ActivityIndicator color="#ffffff" />
           ) : (
             <>
-              <Text style={styles.resetIcon}>🔄</Text>
+              <Text style={styles.resetIcon}>
+                🔄
+              </Text>
 
               <Text style={styles.resetText}>
                 Reset Streak
@@ -357,7 +446,9 @@ export default function DashboardScreen() {
           style={styles.addRelapseButton}
           onPress={handleAddRelapse}
         >
-          <Text style={styles.addRelapseIcon}>🔴</Text>
+          <Text style={styles.addRelapseIcon}>
+            🔴
+          </Text>
 
           <Text style={styles.addRelapseText}>
             Add Relapse
@@ -369,7 +460,9 @@ export default function DashboardScreen() {
           style={styles.calendarButton}
           onPress={handleCalendar}
         >
-          <Text style={styles.calendarIcon}>📅</Text>
+          <Text style={styles.calendarIcon}>
+            📅
+          </Text>
 
           <Text style={styles.calendarText}>
             Calendar
@@ -381,7 +474,9 @@ export default function DashboardScreen() {
           style={styles.statsButton}
           onPress={handleStats}
         >
-          <Text style={styles.statsButtonIcon}>📊</Text>
+          <Text style={styles.statsButtonIcon}>
+            📊
+          </Text>
 
           <Text style={styles.statsButtonText}>
             Statistics
@@ -393,10 +488,26 @@ export default function DashboardScreen() {
           style={styles.heatmapButton}
           onPress={handleHeatmap}
         >
-          <Text style={styles.heatmapButtonIcon}>🟩</Text>
+          <Text style={styles.heatmapButtonIcon}>
+            🟩
+          </Text>
 
           <Text style={styles.heatmapButtonText}>
             365-Day Heatmap
+          </Text>
+        </Pressable>
+
+        {/* Export CSV */}
+        <Pressable
+          style={styles.exportButton}
+          onPress={handleExportCSV}
+        >
+          <Text style={styles.exportButtonIcon}>
+            📤
+          </Text>
+
+          <Text style={styles.exportButtonText}>
+            Export Relapses CSV
           </Text>
         </Pressable>
 
@@ -414,7 +525,9 @@ export default function DashboardScreen() {
         <View style={styles.activityCard}>
           {activities.length === 0 ? (
             <View style={styles.emptyActivity}>
-              <Text style={styles.emptyEmoji}>🌱</Text>
+              <Text style={styles.emptyEmoji}>
+                🌱
+              </Text>
 
               <Text style={styles.emptyTitle}>
                 No activity yet
@@ -492,7 +605,9 @@ export default function DashboardScreen() {
 }
 
 function formatDate(date: string) {
-  const parsed = new Date(`${date}T00:00:00`);
+  const parsed = new Date(
+    `${date}T00:00:00`
+  );
 
   return parsed.toLocaleDateString("en-IN", {
     day: "numeric",
@@ -502,7 +617,9 @@ function formatDate(date: string) {
 }
 
 function formatShortDate(date: string) {
-  const parsed = new Date(`${date}T00:00:00`);
+  const parsed = new Date(
+    `${date}T00:00:00`
+  );
 
   return parsed.toLocaleDateString("en-IN", {
     day: "numeric",
@@ -819,6 +936,29 @@ const styles = StyleSheet.create({
 
   heatmapButtonText: {
     color: "#4ade80",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  exportButton: {
+    height: 54,
+    backgroundColor: "#111827",
+    borderRadius: 16,
+    marginTop: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#374151",
+  },
+
+  exportButtonIcon: {
+    fontSize: 18,
+  },
+
+  exportButtonText: {
+    color: "#fbbf24",
     fontSize: 16,
     fontWeight: "700",
   },
