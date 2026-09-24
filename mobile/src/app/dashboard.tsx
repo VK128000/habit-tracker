@@ -187,6 +187,10 @@ export default function DashboardScreen() {
     router.push("/stats");
   }
 
+  function handleHeatmap() {
+    router.push("/heatmap");
+  }
+
   async function handleLogout() {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       {
@@ -381,6 +385,18 @@ export default function DashboardScreen() {
 
           <Text style={styles.statsButtonText}>
             Statistics
+          </Text>
+        </Pressable>
+
+        {/* 365-Day Heatmap */}
+        <Pressable
+          style={styles.heatmapButton}
+          onPress={handleHeatmap}
+        >
+          <Text style={styles.heatmapButtonIcon}>🟩</Text>
+
+          <Text style={styles.heatmapButtonText}>
+            365-Day Heatmap
           </Text>
         </Pressable>
 
@@ -780,6 +796,29 @@ const styles = StyleSheet.create({
 
   statsButtonText: {
     color: "#a78bfa",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  heatmapButton: {
+    height: 54,
+    backgroundColor: "#111827",
+    borderRadius: 16,
+    marginTop: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#22c55e",
+  },
+
+  heatmapButtonIcon: {
+    fontSize: 18,
+  },
+
+  heatmapButtonText: {
+    color: "#4ade80",
     fontSize: 16,
     fontWeight: "700",
   },
