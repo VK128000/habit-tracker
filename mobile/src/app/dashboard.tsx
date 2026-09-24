@@ -128,8 +128,8 @@ export default function DashboardScreen() {
   /*
    * Reload dashboard every time the screen gets focus.
    *
-   * This is important after returning from Calendar because
-   * a relapse may have been deleted there.
+   * This is important after returning from Calendar or
+   * Clean Days because data may have changed there.
    */
   useFocusEffect(
     useCallback(() => {
@@ -189,6 +189,10 @@ export default function DashboardScreen() {
     router.push("/add-relapse");
   }
 
+  function handleCleanDay() {
+    router.push("/clean-day");
+  }
+
   function handleCalendar() {
     router.push("/calendar");
   }
@@ -212,16 +216,11 @@ export default function DashboardScreen() {
 
       const csv = response.data;
 
-      const fileUri =
-        `${FileSystem.cacheDirectory}relapses.csv`;
+      const fileUri = `${FileSystem.cacheDirectory}relapses.csv`;
 
-      await FileSystem.writeAsStringAsync(
-        fileUri,
-        csv,
-        {
-          encoding: FileSystem.EncodingType.UTF8,
-        }
-      );
+      await FileSystem.writeAsStringAsync(fileUri, csv, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
 
       const available = await Sharing.isAvailableAsync();
 
@@ -256,33 +255,26 @@ export default function DashboardScreen() {
   }
 
   async function handleLogout() {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+          router.replace("/login");
         },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            router.replace("/login");
-          },
-        },
-      ]
-    );
+      },
+    ]);
   }
 
   if (loading) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator
-          size="large"
-          color="#60a5fa"
-        />
+        <ActivityIndicator size="large" color="#60a5fa" />
 
         <Text style={styles.loadingText}>
           Loading your dashboard...
@@ -455,6 +447,20 @@ export default function DashboardScreen() {
           </Text>
         </Pressable>
 
+        {/* Mark clean day */}
+        <Pressable
+          style={styles.cleanDayButton}
+          onPress={handleCleanDay}
+        >
+          <Text style={styles.cleanDayIcon}>
+            🟢
+          </Text>
+
+          <Text style={styles.cleanDayText}>
+            Mark Clean Day
+          </Text>
+        </Pressable>
+
         {/* Calendar */}
         <Pressable
           style={styles.calendarButton}
@@ -605,9 +611,7 @@ export default function DashboardScreen() {
 }
 
 function formatDate(date: string) {
-  const parsed = new Date(
-    `${date}T00:00:00`
-  );
+  const parsed = new Date(`${date}T00:00:00`);
 
   return parsed.toLocaleDateString("en-IN", {
     day: "numeric",
@@ -617,9 +621,7 @@ function formatDate(date: string) {
 }
 
 function formatShortDate(date: string) {
-  const parsed = new Date(
-    `${date}T00:00:00`
-  );
+  const parsed = new Date(`${date}T00:00:00`);
 
   return parsed.toLocaleDateString("en-IN", {
     day: "numeric",
@@ -867,6 +869,29 @@ const styles = StyleSheet.create({
 
   addRelapseText: {
     color: "#f87171",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+
+  cleanDayButton: {
+    height: 54,
+    backgroundColor: "#111827",
+    borderRadius: 16,
+    marginTop: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "#22c55e",
+  },
+
+  cleanDayIcon: {
+    fontSize: 18,
+  },
+
+  cleanDayText: {
+    color: "#4ade80",
     fontSize: 16,
     fontWeight: "700",
   },
