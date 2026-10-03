@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -12,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { useState } from "react";
+import { Alert } from "react-native";
 
 import {
   api,
@@ -104,6 +104,15 @@ export default function LoginScreen() {
             autoCapitalize="none"
             style={styles.input}
           />
+
+          <Pressable
+            onPress={() => router.push("/forgot-password")}
+            style={styles.forgotButton}
+          >
+            <Text style={styles.forgotText}>
+              Forgot password?
+            </Text>
+          </Pressable>
 
           <Pressable
             style={({ pressed }) => [
@@ -203,6 +212,18 @@ const styles = StyleSheet.create({
     color: "#f9fafb",
     fontSize: 18,
     marginBottom: 34,
+  },
+
+  forgotButton: {
+    alignSelf: "flex-end",
+    marginTop: -18,
+    marginBottom: 24,
+  },
+
+  forgotText: {
+    color: "#60a5fa",
+    fontSize: 17,
+    fontWeight: "600",
   },
 
   loginButton: {
