@@ -5,6 +5,8 @@ import { setToken } from "./api";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export default function App() {
   const [token, setTok] = useState(localStorage.getItem("token") || "");
@@ -61,6 +63,17 @@ export default function App() {
           <Route path="/" element={token ? <Dashboard setTok={setTok} /> : <Navigate to="/login" />} />
           <Route path="/login" element={!token ? <Login setTok={setTok} /> : <Navigate to="/" />} />
           <Route path="/signup" element={!token ? <Signup setTok={setTok} /> : <Navigate to="/" />} />
+          <Route
+  path="/forgot-password"
+  element={
+    !token ? <ForgotPassword /> : <Navigate to="/" />
+  }
+/>
+
+<Route
+  path="/reset-password/:token"
+  element={<ResetPassword />}
+/>
         </Routes>
       </main>
     </div>

@@ -6,8 +6,20 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     passHash: { type: String, required: true },
 
-    // for manual reset streak
-    streakResetDate: { type: String, default: "" } // YYYY-MM-DD
+    // Manual streak reset
+    streakResetDate: { type: String, default: "" }, // YYYY-MM-DD
+
+    // Password reset
+    // Only the hash of the reset token is stored.
+    passwordResetTokenHash: {
+      type: String,
+      default: ""
+    },
+
+    passwordResetExpires: {
+      type: Date,
+      default: null
+    }
   },
   { timestamps: true }
 );

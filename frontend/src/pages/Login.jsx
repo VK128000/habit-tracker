@@ -8,7 +8,10 @@ export default function Login({ setTok }) {
 
   const login = async () => {
     try {
-      const res = await api.post("/auth/login", { email, pass });
+      const res = await api.post("/auth/login", {
+        email,
+        pass
+      });
 
       setToken(res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
@@ -22,23 +25,38 @@ export default function Login({ setTok }) {
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-        <h2 className="text-2xl font-bold mb-2">Login</h2>
-        <p className="text-sm text-gray-400 mb-6">Welcome back 🔥</p>
+        <h2 className="text-2xl font-bold mb-2">
+          Login
+        </h2>
+
+        <p className="text-sm text-gray-400 mb-6">
+          Welcome back 🔥
+        </p>
 
         <input
           className="w-full p-3 rounded-xl bg-gray-950 border border-gray-800 mb-3 outline-none focus:border-gray-500"
           placeholder="Email"
+          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
-          className="w-full p-3 rounded-xl bg-gray-950 border border-gray-800 mb-4 outline-none focus:border-gray-500"
+          className="w-full p-3 rounded-xl bg-gray-950 border border-gray-800 mb-2 outline-none focus:border-gray-500"
           placeholder="Password"
           type="password"
           value={pass}
           onChange={(e) => setPass(e.target.value)}
         />
+
+        <div className="text-right mb-4">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-blue-400 hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
 
         <button
           onClick={login}
@@ -49,7 +67,10 @@ export default function Login({ setTok }) {
 
         <p className="mt-4 text-gray-400 text-sm">
           New user?{" "}
-          <Link className="text-blue-400 hover:underline" to="/signup">
+          <Link
+            className="text-blue-400 hover:underline"
+            to="/signup"
+          >
             Signup
           </Link>
         </p>
