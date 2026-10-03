@@ -167,7 +167,10 @@ api.interceptors.request.use(
     // No internet connection
     // ---------------------------------
 
-    if (networkState.isConnected !== true) {
+    if (
+      networkState.isConnected !== true ||
+      networkState.isInternetReachable === false
+    ) {
       const error = new Error(
         "No internet connection"
       ) as ApiError;
@@ -216,7 +219,29 @@ api.interceptors.response.use(
 
       apiError.originalError = error;
 
+      // ---------------------------------
+      // Check actual network state
+      // ---------------------------------
+
+      const networkState = await NetInfo.fetch();
+
+      if (
+        networkState.isConnected !== true ||
+        networkState.isInternetReachable === false
+      ) {
+        apiError.type = "NO_INTERNET";
+
+        apiError.message =
+          "No internet connection. Please connect to Wi-Fi " +
+          "or mobile data and try again.";
+
+        return Promise.reject(apiError);
+      }
+
+      // ---------------------------------
       // Request timed out
+      // ---------------------------------
+
       if (
         error.code === "ECONNABORTED" ||
         error.code === "ETIMEDOUT"
@@ -226,15 +251,20 @@ api.interceptors.response.use(
         apiError.message =
           "The server took too long to respond. " +
           "Please try again.";
-      } else {
-        // Internet may technically be connected,
-        // but backend cannot be reached.
-        apiError.type = "SERVER_UNREACHABLE";
 
-        apiError.message =
-          "Unable to reach the server. " +
-          "Please try again later.";
+        return Promise.reject(apiError);
       }
+
+      // ---------------------------------
+      // Internet exists but backend
+      // cannot be reached
+      // ---------------------------------
+
+      apiError.type = "SERVER_UNREACHABLE";
+
+      apiError.message =
+        "Unable to reach the server. " +
+        "Please try again later.";
 
       return Promise.reject(apiError);
     }
