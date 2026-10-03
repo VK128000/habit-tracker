@@ -10,7 +10,12 @@ import {
 } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { api, getToken, logout } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  getToken,
+  logout,
+} from "@/services/api";
 
 type Stats = {
   totalRelapses: number;
@@ -45,15 +50,14 @@ export default function StatsScreen() {
     } catch (err: any) {
       console.log("Stats error:", err);
 
-      if (err?.response?.status === 401) {
+      if (err?.type === "UNAUTHORIZED") {
         await logout();
         router.replace("/login");
         return;
       }
 
       setError(
-        err?.response?.data?.msg ||
-          "Unable to load statistics. Please try again."
+        getApiErrorMessage(err)
       );
     } finally {
       setLoading(false);

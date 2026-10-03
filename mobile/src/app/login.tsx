@@ -13,7 +13,12 @@ import {
 } from "react-native";
 import { useState } from "react";
 
-import { api, saveToken, saveUser } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  saveToken,
+  saveUser,
+} from "@/services/api";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -44,11 +49,9 @@ export default function LoginScreen() {
 
       router.replace("/dashboard");
     } catch (error: any) {
-      console.log("LOGIN ERROR:", error?.response?.data || error);
+      console.log("LOGIN ERROR:", error);
 
-      const message =
-        error?.response?.data?.msg ||
-        "Unable to login. Please check your credentials.";
+      const message = getApiErrorMessage(error);
 
       Alert.alert("Login failed", message);
     } finally {

@@ -14,7 +14,11 @@ import {
   DateData,
 } from "react-native-calendars";
 
-import { api, getToken } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  getToken,
+} from "@/services/api";
 
 type CleanDay = {
   _id: string;
@@ -65,15 +69,14 @@ export default function CleanDayScreen() {
     } catch (error: any) {
       console.log("Clean day error:", error);
 
-      if (error?.response?.status === 401) {
+      if (error?.type === "UNAUTHORIZED") {
         router.replace("/login");
         return;
       }
 
       Alert.alert(
         "Unable to load",
-        error?.response?.data?.msg ||
-          "Unable to load clean days. Please try again."
+        getApiErrorMessage(error)
       );
     } finally {
       setLoading(false);
@@ -200,15 +203,14 @@ export default function CleanDayScreen() {
         error
       );
 
-      if (error?.response?.status === 401) {
+      if (error?.type === "UNAUTHORIZED") {
         router.replace("/login");
         return;
       }
 
       Alert.alert(
         "Unable to mark clean day",
-        error?.response?.data?.msg ||
-          "Something went wrong. Please try again."
+        getApiErrorMessage(error)
       );
     } finally {
       setSaving(false);
@@ -237,15 +239,14 @@ export default function CleanDayScreen() {
         error
       );
 
-      if (error?.response?.status === 401) {
+      if (error?.type === "UNAUTHORIZED") {
         router.replace("/login");
         return;
       }
 
       Alert.alert(
         "Unable to remove",
-        error?.response?.data?.msg ||
-          "Something went wrong. Please try again."
+        getApiErrorMessage(error)
       );
     } finally {
       setSaving(false);

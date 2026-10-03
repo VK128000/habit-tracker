@@ -13,7 +13,13 @@ import { useCallback, useState } from "react";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 
-import { api, getToken, getUser, logout } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  getToken,
+  getUser,
+  logout,
+} from "@/services/api";
 
 type User = {
   id?: string;
@@ -109,15 +115,14 @@ export default function DashboardScreen() {
     } catch (err: any) {
       console.log("Dashboard error:", err);
 
-      if (err?.response?.status === 401) {
+      if (err?.type === "UNAUTHORIZED") {
         await logout();
         router.replace("/login");
         return;
       }
 
       setError(
-        err?.response?.data?.msg ||
-          "Unable to load your dashboard. Please try again."
+        getApiErrorMessage(err)
       );
     } finally {
       setLoading(false);
@@ -173,8 +178,7 @@ export default function DashboardScreen() {
             } catch (err: any) {
               Alert.alert(
                 "Unable to reset",
-                err?.response?.data?.msg ||
-                  "Something went wrong. Please try again."
+                getApiErrorMessage(err)
               );
             } finally {
               setResetting(false);
@@ -240,7 +244,7 @@ export default function DashboardScreen() {
     } catch (error: any) {
       console.log("Export CSV error:", error);
 
-      if (error?.response?.status === 401) {
+      if (error?.type === "UNAUTHORIZED") {
         await logout();
         router.replace("/login");
         return;
@@ -248,8 +252,7 @@ export default function DashboardScreen() {
 
       Alert.alert(
         "Export failed",
-        error?.response?.data?.msg ||
-          "Unable to export your relapse history."
+        getApiErrorMessage(error)
       );
     }
   }

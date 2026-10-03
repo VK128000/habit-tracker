@@ -13,7 +13,10 @@ import {
 } from "react-native";
 import { useState } from "react";
 
-import { api } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+} from "@/services/api";
 
 export default function AddRelapseScreen() {
   const [date, setDate] = useState(
@@ -30,6 +33,7 @@ export default function AddRelapseScreen() {
         "Missing information",
         "Please enter the date and actress."
       );
+
       return;
     }
 
@@ -40,6 +44,7 @@ export default function AddRelapseScreen() {
         "Invalid date",
         "Please use YYYY-MM-DD format."
       );
+
       return;
     }
 
@@ -58,18 +63,21 @@ export default function AddRelapseScreen() {
         [
           {
             text: "OK",
-            onPress: () => router.replace("/dashboard"),
+            onPress: () => {
+              router.replace("/dashboard");
+            },
           },
         ]
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log("Add relapse error:", error);
 
-      const message =
-        error?.response?.data?.msg ||
-        "Unable to record relapse. Please try again.";
+      const message = getApiErrorMessage(error);
 
-      Alert.alert("Error", message);
+      Alert.alert(
+        "Unable to record relapse",
+        message
+      );
     } finally {
       setLoading(false);
     }
@@ -78,7 +86,11 @@ export default function AddRelapseScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={
+        Platform.OS === "ios"
+          ? "padding"
+          : undefined
+      }
     >
       <ScrollView
         contentContainerStyle={styles.content}
@@ -91,7 +103,9 @@ export default function AddRelapseScreen() {
           onPress={() => router.back()}
           disabled={loading}
         >
-          <Text style={styles.backText}>← Back</Text>
+          <Text style={styles.backText}>
+            ← Back
+          </Text>
         </Pressable>
 
         {/* Header */}

@@ -13,7 +13,12 @@ import {
 } from "react-native";
 import { useState } from "react";
 
-import { api, saveToken, saveUser } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  saveToken,
+  saveUser,
+} from "@/services/api";
 
 export default function SignupScreen() {
   const [name, setName] = useState("");
@@ -54,11 +59,9 @@ export default function SignupScreen() {
 
       router.replace("/dashboard");
     } catch (error: any) {
-      console.log("SIGNUP ERROR:", error?.response?.data || error);
+      console.log("SIGNUP ERROR:", error);
 
-      const message =
-        error?.response?.data?.msg ||
-        "Unable to create your account.";
+      const message = getApiErrorMessage(error);
 
       Alert.alert("Signup failed", message);
     } finally {

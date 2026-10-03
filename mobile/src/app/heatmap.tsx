@@ -10,7 +10,12 @@ import {
 } from "react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { api, getToken, logout } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+  getToken,
+  logout,
+} from "@/services/api";
 
 type Relapse = {
   _id: string;
@@ -102,15 +107,14 @@ export default function HeatmapScreen() {
     } catch (err: any) {
       console.log("Heatmap error:", err);
 
-      if (err?.response?.status === 401) {
+      if (err?.type === "UNAUTHORIZED") {
         await logout();
         router.replace("/login");
         return;
       }
 
       setError(
-        err?.response?.data?.msg ||
-          "Unable to load heatmap. Please try again."
+        getApiErrorMessage(err)
       );
     } finally {
       setLoading(false);

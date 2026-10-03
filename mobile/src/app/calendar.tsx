@@ -14,7 +14,10 @@ import {
   DateData,
 } from "react-native-calendars";
 
-import { api, getToken } from "@/services/api";
+import {
+  api,
+  getApiErrorMessage,
+} from "@/services/api";
 
 type Relapse = {
   _id: string;
@@ -53,8 +56,18 @@ export default function CalendarScreen() {
         : response.data.relapses || [];
 
       setRelapses(data);
-    } catch (error) {
+    } catch (error: any) {
       console.log("Calendar error:", error);
+
+      if (error?.type === "UNAUTHORIZED") {
+        router.replace("/login");
+        return;
+      }
+
+      Alert.alert(
+        "Unable to load calendar",
+        getApiErrorMessage(error)
+      );
     } finally {
       setLoading(false);
     }
@@ -121,15 +134,14 @@ export default function CalendarScreen() {
                 error
               );
 
-              if (error?.response?.status === 401) {
+              if (error?.type === "UNAUTHORIZED") {
                 router.replace("/login");
                 return;
               }
 
               Alert.alert(
                 "Delete failed",
-                error?.response?.data?.msg ||
-                  "Unable to delete this relapse. Please try again."
+                getApiErrorMessage(error)
               );
             } finally {
               setDeletingId(null);
