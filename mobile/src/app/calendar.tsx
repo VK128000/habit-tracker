@@ -17,6 +17,7 @@ import {
 import {
   api,
   getApiErrorMessage,
+  getToken,
 } from "@/services/api";
 
 type Relapse = {
